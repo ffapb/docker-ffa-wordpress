@@ -1,0 +1,25 @@
+version: '2'
+services:
+  db:
+    image: mysql
+    environment:
+    - MYSQL_ROOT_PASSWORD=my-secret-pw
+    volumes:
+    - /data/mysqldb:/var/lib/mysql
+
+  wp:
+    image: wordpress-ffa
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "82:80"
+    environment:
+    - WORDPRESS_DB_HOST=db
+    # it seems that the default value from the linked container doesnt work
+    - WORDPRESS_DB_PASSWORD=my-secret-pw
+    depends_on:
+    - db
+    # load volumes to host so that added plugins are maintained through a docker-compose up/down
+    volumes:
+    - /data/wpHtml:/var/www/html
